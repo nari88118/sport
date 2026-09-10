@@ -1,0 +1,1052 @@
+<title>運動会くじびき</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F3EF; --surface:#FBFBF8; --surface-2:#E9ECE5;
+  --ink:#22211E; --ink-2:#5D5C56; --ink-3:#8C8B84;
+  --line:#DBDDD5; --line-strong:#C3C6BC;
+  --accent:#D3382A; --accent-ink:#FFFFFF; --accent-soft:#F8E4E0;
+  --plus:#2E7D5B; --plus-soft:#DFEDE6;
+  --warn:#B8760D; --warn-soft:#F7EBD5;
+  --shadow:0 1px 2px rgba(34,33,30,.05), 0 6px 18px -14px rgba(34,33,30,.4);
+  --font-display:'Dela Gothic One','Zen Kaku Gothic New',sans-serif;
+  --font-body:'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',system-ui,sans-serif;
+  --font-num:'Barlow Semi Condensed','Zen Kaku Gothic New',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171A; --surface:#1D2023; --surface-2:#25292D;
+    --ink:#ECEAE5; --ink-2:#A8AAA5; --ink-3:#7B7E7B;
+    --line:#2E3338; --line-strong:#414850;
+    --accent:#FF5C46; --accent-ink:#1B0E0A; --accent-soft:#3B211C;
+    --plus:#4FBE8C; --plus-soft:#1B2E26;
+    --warn:#DFA751; --warn-soft:#332A18;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171A; --surface:#1D2023; --surface-2:#25292D;
+  --ink:#ECEAE5; --ink-2:#A8AAA5; --ink-3:#7B7E7B;
+  --line:#2E3338; --line-strong:#414850;
+  --accent:#FF5C46; --accent-ink:#1B0E0A; --accent-soft:#3B211C;
+  --plus:#4FBE8C; --plus-soft:#1B2E26;
+  --warn:#DFA751; --warn-soft:#332A18;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+h1,h2,h3{margin:0}
+
+.bunting{position:relative;height:13px;display:flex;background:var(--surface);border-bottom:1px solid var(--line)}
+.bunting i{flex:1 1 0;height:9px;margin-top:2px;clip-path:polygon(0 0,100% 0,50% 100%);opacity:.85}
+
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px 20px}
+header.top{display:flex;align-items:baseline;gap:16px;padding:12px 0 10px;border-bottom:2px dashed var(--line-strong);flex-wrap:wrap}
+h1{font-family:var(--font-display);font-weight:400;font-size:19px;white-space:nowrap}
+h1 .dot{color:var(--accent)}
+.meter{display:flex;gap:14px;font-family:var(--font-num);font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;align-items:baseline}
+.meter b{font-weight:600;font-size:16px;color:var(--ink);margin-right:2px}
+.meter .spread b{color:var(--plus)}
+.meter .spread.bad b{color:var(--warn)}
+.top-actions{margin-left:auto;display:flex;gap:6px}
+
+.layout{display:grid;grid-template-columns:336px 1fr;gap:20px;align-items:start;margin-top:14px}
+@media (max-width:900px){.layout{grid-template-columns:1fr}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;position:sticky;top:12px}
+@media (max-width:900px){.panel{position:static}}
+.sec{padding:10px 12px;border-bottom:1px solid var(--line)}
+.sec-h{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.sec-h h2{font-family:var(--font-display);font-weight:400;font-size:12px;letter-spacing:.04em}
+.sec-h .note{margin-left:auto;font-family:var(--font-num);font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+textarea,input[type=text]{width:100%;background:var(--bg);border:1px solid var(--line-strong);border-radius:7px;padding:6px 9px}
+textarea{min-height:104px;resize:vertical;line-height:1.7;display:block}
+textarea::placeholder,input::placeholder{color:var(--ink-3)}
+.under{display:flex;align-items:center;gap:8px;margin-top:6px}
+.hint{font-size:11px;color:var(--ink-3);line-height:1.5}
+
+.btn{border:1px solid var(--line-strong);background:var(--surface-2);border-radius:7px;padding:5px 10px;cursor:pointer;font-size:12px;transition:border-color .15s}
+.btn:hover{border-color:var(--ink-3)}
+.btn.tiny{padding:2px 8px;font-size:11px;border-radius:6px}
+.btn.icon{padding:3px 6px;line-height:1}
+.btn-go{width:100%;border:none;cursor:pointer;background:var(--accent);color:var(--accent-ink);font-family:var(--font-display);font-weight:400;font-size:15px;letter-spacing:.06em;padding:12px;transition:filter .15s}
+.btn-go:hover{filter:brightness(1.07)}
+.btn-go[disabled]{opacity:.75;cursor:progress}
+
+#eventList{max-height:250px;overflow-y:auto;margin:0 -2px;padding:0 2px}
+.ev-item{border:1px solid var(--line);border-radius:8px;padding:5px 6px;margin-bottom:5px;background:var(--bg)}
+.ev-top{display:flex;gap:4px;align-items:center}
+.ev-top input{flex:1;min-width:0;border:none;background:transparent;padding:2px 4px;font-weight:500;border-radius:5px}
+.ev-top input:hover{background:var(--surface-2)}
+.ev-bot{display:flex;gap:4px;align-items:center;margin-top:3px}
+.ev-bot input{flex:1;min-width:0;font-size:11px;padding:3px 7px;font-family:var(--font-num);letter-spacing:.02em}
+.pt-btn{flex:none;font-size:11px;border-radius:99px;padding:1px 8px;cursor:pointer;border:1px solid var(--plus);color:var(--plus);background:var(--plus-soft)}
+.pt-btn.minus{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.all-btn{flex:none;font-size:11px;border-radius:99px;padding:2px 9px;cursor:pointer;border:1px dashed var(--line-strong);background:transparent;color:var(--ink-3)}
+.all-btn[aria-pressed="true"]{border-style:solid;border-color:var(--ink);color:var(--ink);background:var(--surface-2)}
+
+select{background:var(--bg);border:1px solid var(--line-strong);border-radius:7px;padding:4px 6px;font-size:11.5px;min-width:0}
+.wish-add{display:flex;gap:4px}
+.wish-add select{flex:1 1 0}
+#wishList{max-height:126px;overflow-y:auto;margin-top:2px}
+.wish-row{display:flex;align-items:center;gap:5px;font-size:12px;padding:3px 1px;border-top:1px solid var(--line)}
+.wish-row .wm{font-weight:500;white-space:nowrap;max-width:92px;overflow:hidden;text-overflow:ellipsis}
+.wish-row .arrow{color:var(--ink-3);flex:none}
+.wish-row .we{color:var(--ink-2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wish-row.gone{opacity:.45;text-decoration:line-through}
+.only-btn{flex:none;font-size:10.5px;border-radius:99px;padding:1px 7px;cursor:pointer;border:1px dashed var(--line-strong);background:transparent;color:var(--ink-3)}
+.only-btn[aria-pressed="true"]{border-style:solid;border-color:var(--plus);color:var(--plus);background:var(--plus-soft)}
+.wish-none{font-size:11px;color:var(--ink-3);padding:4px 1px}
+
+.result-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tabs{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:2px}
+.tab{border:none;background:transparent;padding:4px 12px;border-radius:99px;cursor:pointer;font-size:12px;color:var(--ink-2)}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:var(--shadow)}
+.rh-hint{margin-left:auto;font-size:11px;color:var(--ink-3)}
+
+.notice{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 40%, transparent);border-radius:7px;padding:6px 10px;font-size:12px;margin-bottom:10px}
+.notice b{color:var(--warn)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;align-items:start}
+.ev-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden}
+.ev-card .eh{display:flex;align-items:center;gap:6px;padding:7px 10px 6px;border-bottom:1px dashed var(--line-strong)}
+.ev-card .eh h3{font-family:var(--font-display);font-weight:400;font-size:12.5px;line-height:1.35;min-width:0;overflow-wrap:anywhere}
+.tag{flex:none;font-size:11px;border-radius:99px;padding:0 8px;color:var(--accent);background:var(--accent-soft)}
+.redraw{opacity:.45;flex:none}
+.ev-card:hover .redraw,.ev-card:focus-within .redraw{opacity:1}
+.slots{padding:4px 8px 7px}
+.slot-row{display:flex;gap:7px;align-items:baseline;padding:2px 0}
+.slot-row + .slot-row{border-top:1px solid var(--line)}
+.lb{flex:none;width:52px;font-family:var(--font-num);font-size:11.5px;color:var(--ink-3);letter-spacing:.02em}
+.ppl{display:flex;flex-wrap:wrap;gap:4px;min-width:0}
+.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid transparent;background:var(--surface-2);border-radius:99px;padding:1px 9px;font-size:12.5px;cursor:pointer;transition:border-color .15s,background .15s}
+.chip:hover{border-color:var(--ink-3)}
+.chip .pin,.chip .star{display:none;font-size:9px}
+.chip.wish{border-color:var(--plus);background:var(--plus-soft)}
+.chip.wish .star{display:inline;color:var(--plus)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.chip[aria-pressed="true"] .pin{display:inline}
+.chip.empty{border:1px dashed var(--line-strong);background:transparent;color:var(--ink-3);cursor:default}
+.chip[draggable="true"]{cursor:grab}
+.chip.dragging{opacity:.35;cursor:grabbing}
+.chip.drop-target{outline:2px dashed var(--accent);outline-offset:1px}
+.chip.locked{cursor:pointer}
+.menu{position:absolute;z-index:40;width:224px;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.08),0 20px 40px -20px rgba(0,0,0,.5);padding:8px;display:flex;flex-direction:column;gap:5px}
+.menu-h{display:flex;align-items:baseline;gap:6px;padding:0 2px 5px;border-bottom:1px dashed var(--line-strong)}
+.menu-h b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menu-h span{margin-left:auto;flex:none;font-family:var(--font-num);font-size:11.5px;color:var(--ink-3)}
+.menu-x{flex:none;border:none;background:transparent;cursor:pointer;color:var(--ink-3);font-size:12px;line-height:1;padding:2px 0 2px 6px}
+.menu-x:hover{color:var(--ink)}
+.menu-item{width:100%;text-align:left;border:1px solid var(--line-strong);background:var(--surface-2);border-radius:7px;padding:5px 9px;font-size:12px;cursor:pointer}
+.menu-item:hover:not([disabled]){border-color:var(--ink-3)}
+.menu-item[disabled]{opacity:.4;cursor:not-allowed}
+.menu-item.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.menu-item.danger{color:var(--accent)}
+.menu-row{display:flex;gap:5px}
+.menu-row .menu-item{text-align:center}
+.menu-lab{font-size:10.5px;color:var(--ink-3);letter-spacing:.04em;padding:2px 2px 0}
+.menu select{width:100%}
+.appear{animation:pop .3s cubic-bezier(.2,1.3,.4,1) backwards;animation-delay:calc(var(--i,0) * 26ms)}
+@keyframes pop{from{opacity:0;transform:translateY(5px) scale(.94)}to{opacity:1;transform:none}}
+
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th,td{text-align:left;padding:5px 12px;border-bottom:1px solid var(--line)}
+thead th{font-size:11px;letter-spacing:.05em;color:var(--ink-3);font-weight:500;background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:none}
+td.name{white-space:nowrap;font-weight:500;width:110px}
+td.pt{width:62px;text-align:center;font-family:var(--font-num);font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
+td.cnt{width:56px;text-align:center;font-family:var(--font-num);font-weight:600;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+td.cnt.du{color:var(--accent);font-weight:500}
+td.list{font-size:12px;color:var(--ink-2)}
+td.list .du{color:var(--accent)}
+
+table.matrix{min-width:660px}
+.mname{position:sticky;left:0;background:var(--surface);z-index:1}
+thead .mname{background:var(--surface-2)}
+th.mcol{white-space:nowrap;font-size:11px;color:var(--ink-2)}
+th.mcol .mpt{margin-left:5px;font-size:10px;color:var(--accent)}
+td.mcell{font-family:var(--font-num);font-size:12.5px;text-align:center;white-space:nowrap;letter-spacing:.02em;color:var(--ink)}
+td.mcell.minus{background:color-mix(in srgb, var(--accent-soft) 55%, transparent);color:var(--accent)}
+td.mcell .dash{color:var(--line-strong)}
+
+.empty-state{border:2px dashed var(--line-strong);border-radius:10px;padding:40px 20px;text-align:center;color:var(--ink-3);font-size:12.5px}
+.empty-state .big{font-family:var(--font-display);font-size:15px;color:var(--ink-2);margin-bottom:4px}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:var(--bg);padding:7px 16px;border-radius:99px;font-size:12.5px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:20}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.001ms !important;animation-delay:0ms !important;transition-duration:.001ms !important}}
+@media print{
+  .bunting,.panel,.tabs,.redraw,.top-actions,.rh-hint{display:none !important}
+  body{background:#fff;color:#000}
+  .layout{display:block}
+  .ev-card,.table-wrap{box-shadow:none;border-color:#bbb;break-inside:avoid}
+  table{font-size:10.5px} th,td{padding:3px 6px}
+  .mname{position:static}
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+
+<div class="bunting" id="bunting" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="top">
+    <h1>運動会くじびき<span class="dot">.</span></h1>
+    <div class="meter" id="meter"></div>
+    <div class="top-actions">
+      <button class="btn" id="copyTableBtn" title="スプレッドシートに貼れる表形式（TSV）">表をコピー</button>
+      <button class="btn" id="copyBtn" title="読み上げ・掲示用のテキスト">文でコピー</button>
+      <button class="btn" id="printBtn">印刷</button>
+      <button class="btn" id="themeBtn" aria-label="表示テーマを切り替え">◐</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="panel">
+      <div class="sec">
+        <div class="sec-h"><h2>メンバー</h2><span class="note" id="memberNote"></span></div>
+        <textarea id="members" spellcheck="false" placeholder="1行に1人"></textarea>
+        <div class="under"><span class="hint">1行に1人</span><button class="btn tiny" id="clearMembers" style="margin-left:auto">消す</button></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><h2>競技と枠</h2><span class="note" id="eventNote"></span></div>
+        <div id="eventList"></div>
+        <div class="under" style="gap:5px">
+          <button class="btn tiny" id="addEvent">＋ 競技</button>
+          <button class="btn tiny" id="resetEvents">初期セットに戻す</button>
+        </div>
+        <p class="hint" style="margin:6px 0 0">枠はカンマ区切り（数字だけなら自動で連番）。カゴ持ちや縄回しは<b style="color:var(--accent)">裏方</b>にすると、負担がかたよらないように配ります。「全員」は人数ぶんの走順を自動で作ります。</p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><h2>先に決める</h2><span class="note" id="wishNote"></span></div>
+        <div class="wish-add">
+          <select id="wishMember" aria-label="メンバー"></select>
+          <select id="wishEvent" aria-label="競技"></select>
+          <button class="btn tiny" id="addWish" style="flex:none">＋</button>
+        </div>
+        <div id="wishList"></div>
+        <p class="hint" style="margin:5px 0 0">ここに入れた人は抽選より先に確保します。<b style="color:var(--plus)">だけ</b>を押すと、その人は指定した競技（と全員参加の競技）にしか出ません。</p>
+      </div>
+
+      <button class="btn-go" id="goBtn">よーい、ドン！</button>
+    </aside>
+
+    <main>
+      <div class="result-head">
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="tabEvents" aria-selected="true">競技ごと</button>
+          <button class="tab" role="tab" id="tabTable" aria-selected="false">一覧表</button>
+          <button class="tab" role="tab" id="tabMembers" aria-selected="false">メンバーごと</button>
+        </div>
+        <span class="rh-hint">名前をドラッグ＝入れ替え／タップ＝メニュー（📌固定・走順・担当変更）</span>
+      </div>
+      <div id="notices"></div>
+      <div id="result"></div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = (s,r=document)=>r.querySelector(s);
+  const uid = ()=>Math.random().toString(36).slice(2,9);
+  const KEY = 'undokai-kujibiki-v2';
+
+  const DEFAULT_EVENTS = ()=>[
+    {id:uid(), name:'カゴ持ち係',            pt:-1, all:false, slotText:'1戦目, 2戦目'},
+    {id:uid(), name:'パン食いレース',        pt: 1, all:false, slotText:'1走目, 2走目'},
+    {id:uid(), name:'球投げ投げ',            pt: 1, all:false, slotText:'1投目, 2投目'},
+    {id:uid(), name:'馬跳びリレー',            pt: 1, all:true,  slotText:''},
+    {id:uid(), name:'大縄跳び（縄回し）',     pt:-1, all:false, slotText:'1戦目, 1戦目, 2戦目, 2戦目'},
+    {id:uid(), name:'おぼんリレー',          pt: 1, all:true,  slotText:''}
+  ];
+  const SAMPLE = ['たなか','やまだ','さとう','すずき','いとう','なかむら','こばやし','よしだ'].join('\n');
+
+  let S = {
+    memberText: SAMPLE,
+    events: DEFAULT_EVENTS(),
+    pins: {},      // "evId|slotIndex" -> memberKey
+    wishes: [],    // {id, key, evId, only}  先に決める
+    wishFail: [],  // 入りきらなかった希望
+    result: null,  // evId -> [memberKey|null, ...]
+    tab: 'events',
+    theme: null
+  };
+
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+  function load(){
+    try{
+      const raw = localStorage.getItem(KEY); if(!raw) return;
+      const o = JSON.parse(raw);
+      if(o && typeof o === 'object' && Array.isArray(o.events)) S = Object.assign(S, o);
+      S.pins = S.pins || {};
+      if(!Array.isArray(S.wishes)) S.wishes = [];
+      if(!Array.isArray(S.wishFail)) S.wishFail = [];
+    }catch(e){}
+  }
+
+  function parseMembers(){
+    const seen = new Set(), out = [];
+    S.memberText.split(/\r?\n/).forEach(line=>{
+      const name = line.trim().replace(/^[,、]+|[,、]+$/g,'');
+      if(!name) return;
+      let key = name, n = 2;
+      while(seen.has(key)){ key = name + '#' + n; n++; }
+      seen.add(key);
+      out.push({key, name});
+    });
+    return out;
+  }
+  function labelsOf(ev, n){
+    if(ev.all) return Array.from({length:n}, (_,i)=>(i+1)+'走目');
+    const raw = String(ev.slotText||'').trim();
+    if(/^\d+$/.test(raw)){
+      const k = Math.max(0, Math.min(60, parseInt(raw,10)));
+      return Array.from({length:k}, (_,i)=>(i+1)+'番');
+    }
+    return raw.split(/[,、\n]+/).map(s=>s.trim()).filter(Boolean);
+  }
+  function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function pickRandom(a){ return a[Math.floor(Math.random()*a.length)]; }
+  let menuEl = null, menuKey = null;
+  function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  /* ── 割り当て：先に決めた分を確保 → ポイントが揃うように ── */
+  function assign(onlyEvId){
+    const members = parseMembers();
+    const n = members.length;
+    if(!n){ S.result = null; S.wishFail = []; return; }
+    const byKey = new Map(members.map(m=>[m.key,m]));
+    const evs = S.events.map(ev=>({ev, labels: labelsOf(ev, n)}));
+    const evById = new Map(evs.map(e=>[e.ev.id, e]));
+
+    // 先に決める（希望）
+    const wishes = S.wishes.filter(w=>byKey.has(w.key) && evById.has(w.evId));
+    const wishEvs = new Map();
+    wishes.forEach(w=>{ if(!wishEvs.has(w.key)) wishEvs.set(w.key, new Set()); wishEvs.get(w.key).add(w.evId); });
+    const onlyKeys = new Set(wishes.filter(w=>w.only).map(w=>w.key));
+    const allowed = (e, key)=> !onlyKeys.has(key) || e.ev.all || (wishEvs.get(key) || new Set()).has(e.ev.id);
+
+    const score = new Map(members.map(m=>[m.key,0]));
+    const count = new Map(members.map(m=>[m.key,0]));
+    const inEv  = new Map();
+    const res   = {};
+    evs.forEach(e=>{ res[e.ev.id] = new Array(e.labels.length).fill(null); inEv.set(e.ev.id, new Map()); });
+
+    const capOf = e => Math.max(1, Math.ceil(e.labels.length / n));
+    const bump = (evId, key, d)=>{ const m = inEv.get(evId); m.set(key,(m.get(key)||0)+d); };
+    const place = (e, si, key)=>{
+      res[e.ev.id][si] = key;
+      score.set(key, score.get(key) + e.ev.pt);
+      count.set(key, count.get(key) + 1);
+      bump(e.ev.id, key, 1);
+    };
+    const locked = new Set(); // 動かさない枠 "evId|si"
+
+    // 1) 📌固定と、引き直し対象外の既存結果
+    evs.forEach(e=>{
+      e.labels.forEach((lb,si)=>{
+        let key = S.pins[e.ev.id+'|'+si], isPin = !!key;
+        if(!key && onlyEvId && e.ev.id !== onlyEvId && S.result && S.result[e.ev.id]) key = S.result[e.ev.id][si];
+        if(key && byKey.has(key)){
+          place(e, si, key);
+          if(isPin) locked.add(e.ev.id+'|'+si);
+        }
+      });
+    });
+
+    // 2) 先に決めた人を確保（登録順・空き枠からランダム）
+    const failed = [];
+    wishes.forEach(w=>{
+      const e = evById.get(w.evId);
+      if(e.ev.all) return;                                  // 全員出るので確保不要
+      if((inEv.get(e.ev.id).get(w.key)||0) > 0) return;      // すでに入っている
+      const open = [];
+      res[e.ev.id].forEach((v,si)=>{ if(v===null) open.push(si); });
+      if(!open.length){ failed.push({key:w.key, evId:w.evId}); return; }
+      const si = pickRandom(open);
+      place(e, si, w.key);
+      locked.add(e.ev.id+'|'+si);
+    });
+    S.wishFail = failed;
+
+    // 3) 残りを貪欲に配置（+1枠はポイント低い人／−1枠はポイント高い人）
+    const open = [];
+    evs.forEach(e=> e.labels.forEach((lb,si)=>{ if(res[e.ev.id][si]===null) open.push({e,si}); }));
+    shuffle(open).forEach(({e,si})=>{
+      const m = inEv.get(e.ev.id), cap = capOf(e);
+      let pool = members.filter(x=>allowed(e, x.key) && (m.get(x.key)||0) < cap);
+      if(!pool.length) pool = members.filter(x=>allowed(e, x.key));
+      if(!pool.length) return;                               // 埋められない枠は空のまま
+      const minIn = Math.min.apply(null, pool.map(x=>m.get(x.key)||0));
+      pool = pool.filter(x=>(m.get(x.key)||0)===minIn);
+      const want = e.ev.pt >= 0
+        ? Math.min.apply(null, pool.map(x=>score.get(x.key)))
+        : Math.max.apply(null, pool.map(x=>score.get(x.key)));
+      let cand = pool.filter(x=>score.get(x.key)===want);
+      const minC = Math.min.apply(null, cand.map(x=>count.get(x.key)));
+      cand = cand.filter(x=>count.get(x.key)===minC);
+      place(e, si, pickRandom(cand).key);
+    });
+
+    // 4) 付け替え・入れ替えでポイントのばらつきを詰める（固定・先に決めた枠は動かさない）
+    const movable = [];
+    if(!onlyEvId){
+      evs.forEach(e=> e.labels.forEach((lb,si)=>{ if(!locked.has(e.ev.id+'|'+si)) movable.push({e,si}); }));
+    }
+    if(movable.length){
+      let total = 0, totalC = 0;
+      score.forEach(v=>{ total += v; });
+      count.forEach(v=>{ totalC += v; });
+      const mean = total / n, meanC = totalC / n, W = 0.2;
+      const f = (sc, ct)=>{ const a = sc-mean, b = ct-meanC; return a*a + W*b*b; };
+      for(let it=0; it<4000; it++){
+        const A = pickRandom(movable);
+        const a = res[A.e.ev.id][A.si];
+        if(!a) continue;
+
+        if(Math.random() < 0.65){
+          // 付け替え：この枠の担当を別の人へ
+          const b = pickRandom(members).key;
+          if(b === a || !allowed(A.e, b)) continue;
+          if((inEv.get(A.e.ev.id).get(b)||0) >= capOf(A.e)) continue;
+          const pt = A.e.ev.pt;
+          const sa = score.get(a), sb = score.get(b), ca = count.get(a), cb = count.get(b);
+          if(f(sa-pt, ca-1) + f(sb+pt, cb+1) < f(sa,ca) + f(sb,cb) - 1e-9){
+            res[A.e.ev.id][A.si] = b;
+            score.set(a, sa-pt); score.set(b, sb+pt);
+            count.set(a, ca-1);  count.set(b, cb+1);
+            bump(A.e.ev.id, a, -1); bump(A.e.ev.id, b, 1);
+          }
+        } else {
+          // 入れ替え：ポイントの違う枠どうしを交換
+          const B = pickRandom(movable);
+          if(A.e.ev.id === B.e.ev.id || A.e.ev.pt === B.e.ev.pt) continue;
+          const b = res[B.e.ev.id][B.si];
+          if(!b || b === a) continue;
+          if(!allowed(A.e, b) || !allowed(B.e, a)) continue;
+          if((inEv.get(A.e.ev.id).get(b)||0) >= capOf(A.e)) continue;
+          if((inEv.get(B.e.ev.id).get(a)||0) >= capOf(B.e)) continue;
+          const sa = score.get(a), sb = score.get(b), ca = count.get(a), cb = count.get(b);
+          const d = B.e.ev.pt - A.e.ev.pt;
+          if(f(sa+d, ca) + f(sb-d, cb) < f(sa,ca) + f(sb,cb) - 1e-9){
+            res[A.e.ev.id][A.si] = b; res[B.e.ev.id][B.si] = a;
+            score.set(a, sa+d); score.set(b, sb-d);
+            bump(A.e.ev.id, a, -1); bump(A.e.ev.id, b, 1);
+            bump(B.e.ev.id, b, -1); bump(B.e.ev.id, a, 1);
+          }
+        }
+      }
+    }
+
+    S.result = res;
+    save();
+  }
+
+  /* ── 集計 ── */
+  function tally(members){
+    const score = new Map(members.map(m=>[m.key,0]));
+    const count = new Map(members.map(m=>[m.key,0]));
+    const pos   = new Map(members.map(m=>[m.key,0]));   // 出場のかず
+    const neg   = new Map(members.map(m=>[m.key,0]));   // 裏方のかず
+    const detail = new Map(members.map(m=>[m.key,[]]));
+    if(S.result){
+      S.events.forEach(ev=>{
+        const labels = labelsOf(ev, members.length);
+        const arr = S.result[ev.id] || [];
+        labels.forEach((lb,si)=>{
+          const k = arr[si];
+          if(k==null || !score.has(k)) return;
+          score.set(k, score.get(k) + ev.pt);
+          count.set(k, count.get(k) + 1);
+          if(ev.pt < 0) neg.set(k, neg.get(k)+1); else pos.set(k, pos.get(k)+1);
+          detail.get(k).push({name:ev.name, label:lb, pt:ev.pt});
+        });
+      });
+    }
+    return {score, count, pos, neg, detail};
+  }
+
+  /* ── 描画 ── */
+  function renderWishes(){
+    const members = parseMembers();
+    const byKey = new Map(members.map(m=>[m.key,m]));
+    const evById = new Map(S.events.map(ev=>[ev.id,ev]));
+
+    const ms = $('#wishMember'), es = $('#wishEvent');
+    const keepM = ms.value, keepE = es.value;
+    ms.innerHTML = members.map(m=>'<option value="'+esc(m.key)+'">'+esc(m.name)+'</option>').join('')
+      || '<option value="">（メンバーなし）</option>';
+    es.innerHTML = S.events.map(ev=>'<option value="'+ev.id+'">'+esc(ev.name||'（名前なし）')+(ev.all?'（全員）':'')+'</option>').join('')
+      || '<option value="">（競技なし）</option>';
+    if(keepM && byKey.has(keepM)) ms.value = keepM;
+    if(keepE && evById.has(keepE)) es.value = keepE;
+
+    const box = $('#wishList');
+    if(!S.wishes.length){ box.innerHTML = '<div class="wish-none">まだ指定はありません</div>'; }
+    else{
+      box.innerHTML = S.wishes.map(w=>{
+        const m = byKey.get(w.key), ev = evById.get(w.evId);
+        const gone = !m || !ev;
+        return '<div class="wish-row'+(gone?' gone':'')+'">' +
+          '<span class="wm">'+esc(m ? m.name : '（不明）')+'</span><span class="arrow">→</span>' +
+          '<span class="we">'+esc(ev ? (ev.name||'（名前なし）') : '（削除済み）')+'</span>' +
+          '<button class="only-btn" data-only="'+w.id+'" aria-pressed="'+(!!w.only)+'" title="この人はここ（と全員参加の競技）だけに出る">だけ</button>' +
+          '<button class="btn icon tiny" data-wdel="'+w.id+'" aria-label="削除">✕</button></div>';
+      }).join('');
+    }
+    $('#wishNote').textContent = S.wishes.length ? S.wishes.length+'件' : '';
+  }
+
+  function renderEvents(){
+    const box = $('#eventList');
+    box.innerHTML = '';
+    const n = parseMembers().length;
+    S.events.forEach(ev=>{
+      const item = document.createElement('div');
+      item.className = 'ev-item';
+      item.innerHTML =
+        '<div class="ev-top">' +
+          '<input type="text" data-id="'+ev.id+'" data-k="name" aria-label="競技名">' +
+          '<button class="pt-btn'+(ev.pt<0?' minus':'')+'" data-pt="'+ev.id+'" title="出場と裏方を切り替える">'+(ev.pt<0?'裏方':'出場')+'</button>' +
+          '<button class="btn icon tiny" data-del="'+ev.id+'" aria-label="削除">✕</button>' +
+        '</div>' +
+        '<div class="ev-bot">' +
+          '<input type="text" data-id="'+ev.id+'" data-k="slotText" placeholder="1戦目, 2戦目" aria-label="枠"'+(ev.all?' disabled':'')+'>' +
+          '<button class="all-btn" data-all="'+ev.id+'" aria-pressed="'+(!!ev.all)+'" title="全員が1回ずつ出る競技">全員</button>' +
+        '</div>';
+      item.querySelector('input[data-k="name"]').value = ev.name;
+      const st = item.querySelector('input[data-k="slotText"]');
+      st.value = ev.all ? (n ? '1走目〜'+n+'走目（自動）' : '（自動）') : ev.slotText;
+      box.appendChild(item);
+    });
+    let slots = 0, plus = 0, minus = 0;
+    S.events.forEach(ev=>{
+      const k = labelsOf(ev, n).length;
+      slots += k;
+      if(ev.pt>=0) plus += k*ev.pt; else minus += k*ev.pt;
+    });
+    $('#eventNote').textContent = S.events.length+'種目 / '+slots+'枠';
+  }
+
+  function renderAll(){
+    closeMenu();                       // 描き直すと参照先がズレるので必ず閉じる
+    const members = parseMembers();
+    const n = members.length;
+    $('#memberNote').textContent = n + '人';
+    const {score, count, pos, neg, detail} = tally(members);
+    renderWishes();
+
+    let slots = 0;
+    S.events.forEach(ev=>{ slots += labelsOf(ev, n).length; });
+
+    let meter = '<span><b>'+n+'</b>人</span><span><b>'+S.events.length+'</b>種目</span><span><b>'+slots+'</b>枠</span>';
+    if(S.result && n){
+      const vals = members.map(m=>score.get(m.key));
+      const spread = Math.max.apply(null, vals) - Math.min.apply(null, vals);
+      meter += spread > 1
+        ? '<span class="spread bad"><b>△</b> すこしかたよりあり</span>'
+        : '<span class="spread"><b>◎</b> みんな同じくらい</span>';
+    }
+    $('#meter').innerHTML = meter;
+
+    const notices = [];
+    if(n){
+      const over = S.events.filter(ev=>!ev.all && labelsOf(ev,n).length > n).map(ev=>ev.name);
+      if(over.length) notices.push('<b>'+esc(over.join('・'))+'</b>は枠が人数より多いので、2回まわってくる人がいます。');
+      if(S.result){
+        const empties = S.events.reduce((a,ev)=>a + (S.result[ev.id]||[]).filter(k=>k==null).length, 0);
+        if(empties) notices.push('<b>'+empties+'枠</b>が埋まりませんでした。「だけ」の指定を減らすか、枠を見直してください。');
+        if(S.wishFail && S.wishFail.length){
+          const byKey = new Map(members.map(m=>[m.key,m]));
+          const evById = new Map(S.events.map(ev=>[ev.id,ev]));
+          const txt = S.wishFail.filter(f=>byKey.has(f.key) && evById.has(f.evId))
+            .map(f=>byKey.get(f.key).name+'→'+(evById.get(f.evId).name||'（名前なし）')).join('、');
+          if(txt) notices.push('<b>'+esc(txt)+'</b> は枠が満杯で入れませんでした。その競技の枠を増やしてください。');
+        }
+      }
+    }
+    $('#notices').innerHTML = notices.map(x=>'<div class="notice">'+x+'</div>').join('');
+
+    const out = $('#result');
+    if(!n){ out.innerHTML = empty('メンバーがいません','左に名前を1行ずつ入れてください。'); return; }
+    if(!S.events.length){ out.innerHTML = empty('競技がありません','左の「競技と枠」から追加してください。'); return; }
+    if(!S.result){ out.innerHTML = empty('まだ抽選していません','「よーい、ドン！」を押すと、ここに結果が出ます。'); return; }
+
+    if(S.tab==='events') renderByEvent(members);
+    else if(S.tab==='table') renderMatrix(members, pos, neg);
+    else renderByMember(members, pos, neg, detail);
+  }
+
+  function empty(big, sub){ return '<div class="empty-state"><div class="big">'+big+'</div><div>'+sub+'</div></div>'; }
+
+  function renderByEvent(members){
+    const byKey = new Map(members.map(m=>[m.key,m]));
+    const wishSet = new Set(S.wishes.map(w=>w.key+'|'+w.evId));
+    const n = members.length;
+    let idx = 0;
+    const html = S.events.map(ev=>{
+      const labels = labelsOf(ev, n);
+      const arr = S.result[ev.id] || [];
+      const rows = [];
+      labels.forEach((lb,si)=>{
+        const last = rows[rows.length-1];
+        if(last && last.label === lb) last.items.push({si, key:arr[si]});
+        else rows.push({label:lb, items:[{si, key:arr[si]}]});
+      });
+      const body = rows.map(r=>{
+        const ppl = r.items.map(it=>{
+          idx++;
+          const drop = ' data-drop="'+ev.id+'|'+it.si+'" data-ev="'+ev.id+'" data-si="'+it.si+'"';
+          if(it.key==null || !byKey.has(it.key))
+            return '<span class="chip empty"'+drop+'>—</span>';
+          const locked = S.pins[ev.id+'|'+it.si] != null;
+          const pinned = S.pins[ev.id+'|'+it.si] === it.key;
+          const isWish = wishSet.has(it.key+'|'+ev.id);
+          const anim = animateNext ? ' appear' : '';
+          return '<button class="chip'+anim+(isWish?' wish':'')+(locked?' locked':'')+'" style="--i:'+idx+'"' +
+            ' draggable="'+(locked?'false':'true')+'" aria-pressed="'+pinned+'"'+drop+' data-key="'+esc(it.key)+'"' +
+            ' title="タップでメニュー／ドラッグで入れ替え">' +
+            '<span class="star">★</span>' + esc(byKey.get(it.key).name) + '<span class="pin">📌</span></button>';
+        }).join('');
+        return '<div class="slot-row"><span class="lb">'+esc(r.label)+'</span><div class="ppl">'+ppl+'</div></div>';
+      }).join('') || '<div class="slot-row"><span class="lb">—</span><div class="ppl"><span class="chip empty">枠が空です</span></div></div>';
+
+      return '<article class="ev-card"><div class="eh"><h3>'+esc(ev.name||'（名前なし）')+'</h3>' +
+        (ev.pt<0 ? '<span class="tag minus">裏方</span>' : '') +
+        '<button class="btn icon tiny redraw" data-redraw="'+ev.id+'" title="この競技だけ引き直す" aria-label="引き直す">↺</button></div>' +
+        '<div class="slots">'+body+'</div></article>';
+    }).join('');
+    $('#result').innerHTML = '<div class="grid">'+html+'</div>';
+  }
+
+  function buildCells(members){
+    const cells = new Map();   // "memberKey|evId" -> [枠ラベル]
+    if(!S.result) return cells;
+    S.events.forEach(ev=>{
+      const labels = labelsOf(ev, members.length);
+      const arr = S.result[ev.id] || [];
+      labels.forEach((lb,si)=>{
+        const k = arr[si];
+        if(k==null) return;
+        const kk = k+'|'+ev.id;
+        if(!cells.has(kk)) cells.set(kk, []);
+        cells.get(kk).push(lb);
+      });
+    });
+    return cells;
+  }
+
+  function renderMatrix(members, pos, neg){
+    const cells = buildCells(members);
+    const head = '<tr><th class="mname">なまえ</th>' +
+      S.events.map(ev=>'<th class="mcol'+(ev.pt<0?' minus':'')+'">'+esc(ev.name||'（名前なし）') +
+        (ev.pt<0 ? '<span class="mpt">裏方</span>' : '') + '</th>').join('') +
+      '<th style="text-align:center">出場</th><th style="text-align:center">裏方</th></tr>';
+    const body = members.map(m=>{
+      const tds = S.events.map(ev=>{
+        const v = cells.get(m.key+'|'+ev.id);
+        return '<td class="mcell'+(ev.pt<0?' minus':'')+'">' + (v ? esc(v.join(' / ')) : '<span class="dash">−</span>') + '</td>';
+      }).join('');
+      return '<tr><td class="name mname">'+esc(m.name)+'</td>'+tds +
+        '<td class="cnt">'+pos.get(m.key)+'</td><td class="cnt du">'+(neg.get(m.key) || '—')+'</td></tr>';
+    }).join('');
+    $('#result').innerHTML = '<div class="table-wrap"><table class="matrix"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>';
+  }
+
+  function tableText(){
+    const members = parseMembers();
+    const {pos, neg} = tally(members);
+    const cells = buildCells(members);
+    const rows = [['なまえ'].concat(S.events.map(ev=>(ev.name||'（名前なし）')+(ev.pt<0?'（裏方）':''))).concat(['出場','裏方'])];
+    members.forEach(m=>{
+      rows.push([m.name]
+        .concat(S.events.map(ev=>{ const v = cells.get(m.key+'|'+ev.id); return v ? v.join(' / ') : ''; }))
+        .concat([String(pos.get(m.key)), String(neg.get(m.key))]));
+    });
+    return rows.map(r=>r.join('\t')).join('\n');
+  }
+
+  function renderByMember(members, pos, neg, detail){
+    const rows = members.map(m=>{
+      const list = detail.get(m.key).map(d=>{
+        const t = esc(d.name)+'（'+esc(d.label)+'）';
+        return d.pt<0 ? '<span class="du">'+t+'</span>' : t;
+      }).join(' / ') || '—';
+      return '<tr><td class="name">'+esc(m.name)+'</td>' +
+        '<td class="cnt">'+pos.get(m.key)+'</td>' +
+        '<td class="cnt du">'+(neg.get(m.key) || '—')+'</td>' +
+        '<td class="list">'+list+'</td></tr>';
+    }).join('');
+    $('#result').innerHTML = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>なまえ</th><th style="text-align:center">出場</th><th style="text-align:center">裏方</th><th>担当</th>' +
+      '</tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }
+
+  function resultText(){
+    const members = parseMembers();
+    const byKey = new Map(members.map(m=>[m.key,m]));
+    const {pos, neg} = tally(members);
+    const out = ['運動会 わりふり',''];
+    S.events.forEach(ev=>{
+      const labels = labelsOf(ev, members.length);
+      const arr = S.result[ev.id] || [];
+      out.push('■ '+(ev.name||'（名前なし）')+(ev.pt<0?'（裏方）':''));
+      const rows = [];
+      labels.forEach((lb,si)=>{
+        const nm = arr[si]!=null && byKey.has(arr[si]) ? byKey.get(arr[si]).name : '—';
+        const last = rows[rows.length-1];
+        if(last && last.label===lb) last.names.push(nm);
+        else rows.push({label:lb, names:[nm]});
+      });
+      rows.forEach(r=>out.push('　'+r.label+'：'+r.names.join('、')));
+      out.push('');
+    });
+    if(S.wishes.length){
+      const evById = new Map(S.events.map(ev=>[ev.id,ev]));
+      const ws = S.wishes.filter(w=>byKey.has(w.key) && evById.has(w.evId));
+      if(ws.length){
+        out.push('【先に決めた分】');
+        ws.forEach(w=>out.push('　'+byKey.get(w.key).name+' → '+(evById.get(w.evId).name||'（名前なし）')+(w.only?'（だけ）':'')));
+        out.push('');
+      }
+    }
+    out.push('【担当のかず】');
+    members.forEach(m=>out.push('　'+m.name+'　出場'+pos.get(m.key)+(neg.get(m.key)?'・裏方'+neg.get(m.key):'')));
+    return out.join('\n');
+  }
+
+  /* ── 手動編集：移動・入れ替え・付け替え ── */
+  function movableIdx(evId, len){
+    const out = [];
+    for(let i=0;i<len;i++) if(S.pins[evId+'|'+i] == null) out.push(i);
+    return out;
+  }
+  // 同じ競技のなかで走順を動かす（あいだの人は繰り上げ／繰り下げ、固定枠はそのまま）
+  function moveWithin(evId, fromSi, toSi){
+    const arr = S.result && S.result[evId];
+    if(!arr) return false;
+    const mov = movableIdx(evId, arr.length);
+    const a = mov.indexOf(fromSi), b = mov.indexOf(toSi);
+    if(a < 0 || b < 0 || a === b) return false;
+    const vals = mov.map(i=>arr[i]);
+    const x = vals.splice(a,1)[0];
+    vals.splice(b, 0, x);
+    mov.forEach((i,k)=>{ arr[i] = vals[k]; });
+    return true;
+  }
+  // 別の競技の枠と交換する
+  function swapSlots(e1, s1, e2, s2){
+    if(!S.result || !S.result[e1] || !S.result[e2]) return false;
+    if(S.pins[e1+'|'+s1] != null || S.pins[e2+'|'+s2] != null) return false;
+    const a = S.result[e1][s1], b = S.result[e2][s2];
+    S.result[e1][s1] = b; S.result[e2][s2] = a;
+    return true;
+  }
+  // この枠の担当を差し替える（相手が同じ競技にいれば入れ替え）
+  function setSlot(evId, si, key){
+    const arr = S.result && S.result[evId];
+    if(!arr) return false;
+    if(S.pins[evId+'|'+si] != null) return false;
+    const cur = arr[si];
+    if(key === cur) return false;
+    if(key){
+      const j = arr.indexOf(key);
+      if(j >= 0){
+        if(S.pins[evId+'|'+j] != null){ toast('その人は別の枠で固定されています'); return false; }
+        arr[j] = cur;
+      }
+    }
+    arr[si] = key;
+    return true;
+  }
+  function applyEdit(ok, msg){
+    if(!ok) return;
+    save(); renderAll();
+    if(msg) toast(msg);
+  }
+
+  /* ── 枠メニュー ── */
+  function closeMenu(){
+    document.querySelectorAll('.menu').forEach(el=>el.remove());
+    menuEl = null; menuKey = null;
+  }
+  function openMenu(chip){
+    const evId = chip.dataset.ev, si = +chip.dataset.si;
+    if(menuEl && menuKey === evId+'|'+si){ closeMenu(); return; }   // 同じ枠をもう一度 → 閉じる
+    closeMenu();
+    const ev = S.events.find(x=>x.id===evId);
+    if(!ev || !S.result || !S.result[evId]) return;
+    const members = parseMembers();
+    const byKey = new Map(members.map(m=>[m.key,m]));
+    const labels = labelsOf(ev, members.length);
+    const arr = S.result[evId];
+    const key = arr[si];
+    const locked = S.pins[evId+'|'+si] != null;
+    const mov = movableIdx(evId, arr.length);
+    const at = mov.indexOf(si);
+
+    const el = document.createElement('div');
+    el.className = 'menu';
+    el.innerHTML =
+      '<div class="menu-h"><b>'+esc(ev.name||'（名前なし）')+'</b><span>'+esc(labels[si]||'')+'</span>' +
+        '<button class="menu-x" data-act="close" aria-label="閉じる">✕</button></div>' +
+      '<button class="menu-item'+(locked?' on':'')+'" data-act="pin">'+(locked?'📌 固定を解除する':'📌 この枠に固定する')+'</button>' +
+      '<div class="menu-row">' +
+        '<button class="menu-item" data-act="up"'+((locked||at<=0)?' disabled':'')+'>◀ 前へ</button>' +
+        '<button class="menu-item" data-act="down"'+((locked||at<0||at>=mov.length-1)?' disabled':'')+'>次へ ▶</button>' +
+      '</div>' +
+      '<label class="menu-lab" for="menuPick">この枠の担当</label>' +
+      '<select id="menuPick" data-act="pick"'+(locked?' disabled':'')+'>' +
+        '<option value="">（空ける）</option>' +
+        members.map(m=>'<option value="'+esc(m.key)+'"'+(m.key===key?' selected':'')+'>'+esc(m.name) +
+          (arr.indexOf(m.key)>=0 && m.key!==key ? '（入れ替え）' : '') + '</option>').join('') +
+      '</select>';
+
+    document.body.appendChild(el);
+    const r = chip.getBoundingClientRect();
+    const w = el.offsetWidth, h = el.offsetHeight;
+    let left = r.left + window.scrollX;
+    let top  = r.bottom + window.scrollY + 6;
+    left = Math.max(8 + window.scrollX, Math.min(left, window.scrollX + document.documentElement.clientWidth - w - 8));
+    if(r.bottom + h + 12 > window.innerHeight) top = r.top + window.scrollY - h - 6;
+    el.style.left = left + 'px';
+    el.style.top  = Math.max(window.scrollY + 8, top) + 'px';
+
+    menuEl = el;
+    menuKey = evId+'|'+si;
+    el.addEventListener('click', e=>{
+      const b = e.target.closest('[data-act]');
+      if(!b || b.tagName === 'SELECT') return;
+      const act = b.dataset.act;
+      if(act === 'close'){ closeMenu(); return; }
+      if(act === 'pin'){
+        const pk = evId+'|'+si;
+        closeMenu();
+        if(S.pins[pk] != null){ delete S.pins[pk]; applyEdit(true, '固定をはずしました'); }
+        else if(key != null){ S.pins[pk] = key; applyEdit(true, 'この枠に固定しました'); }
+        else toast('空の枠は固定できません');
+        return;
+      }
+      if(act === 'up' || act === 'down'){
+        const to = mov[at + (act==='up' ? -1 : 1)];
+        closeMenu();
+        applyEdit(moveWithin(evId, si, to), '走順を入れ替えました');
+      }
+    });
+    el.querySelector('#menuPick').addEventListener('change', e=>{
+      const v = e.target.value || null;
+      closeMenu();
+      applyEdit(setSlot(evId, si, v), v ? '担当を変えました' : '枠を空けました');
+    });
+    setTimeout(()=>{ const s0 = el.querySelector('#menuPick'); if(s0 && !locked) s0.focus(); }, 0);
+  }
+  document.addEventListener('click', e=>{
+    if(!menuEl || e.target.closest('.menu')) return;
+    const chip = e.target.closest('.chip[data-key]');
+    if(chip && chip.dataset.ev+'|'+chip.dataset.si === menuKey) return;  // 開閉は openMenu が担当
+    if(!chip) closeMenu();
+  });
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeMenu(); });
+  window.addEventListener('resize', closeMenu);
+
+  let animateNext = false;
+  let toastTimer = null;
+  function toast(msg){
+    const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+  }
+
+  (function(){
+    const cols = ['--accent','--plus','--warn','--ink-3'];
+    let html = '';
+    for(let i=0;i<48;i++) html += '<i style="background:var('+cols[i%cols.length]+')"></i>';
+    $('#bunting').innerHTML = html;
+  })();
+
+  /* ── 操作 ── */
+  $('#members').addEventListener('input', e=>{ S.memberText = e.target.value; save(); renderEvents(); renderAll(); });
+  $('#clearMembers').addEventListener('click', ()=>{
+    S.memberText=''; $('#members').value=''; S.result=null; S.pins={}; S.wishes=[]; S.wishFail=[]; save(); renderEvents(); renderAll();
+  });
+
+  $('#eventList').addEventListener('input', e=>{
+    const el = e.target, id = el.dataset.id, k = el.dataset.k;
+    if(!id || !k) return;
+    const ev = S.events.find(x=>x.id===id); if(!ev) return;
+    ev[k] = el.value;
+    $('#eventNote').textContent = S.events.length+'種目 / '+S.events.reduce((a,x)=>a+labelsOf(x, parseMembers().length).length,0)+'枠';
+    save(); renderAll();
+  });
+  $('#eventList').addEventListener('click', e=>{
+    const pt = e.target.closest('[data-pt]');
+    if(pt){
+      const ev = S.events.find(x=>x.id===pt.dataset.pt); if(!ev) return;
+      ev.pt = ev.pt < 0 ? 1 : -1;
+      renderEvents(); renderAll(); save(); return;
+    }
+    const all = e.target.closest('[data-all]');
+    if(all){
+      const ev = S.events.find(x=>x.id===all.dataset.all); if(!ev) return;
+      ev.all = !ev.all;
+      delete S.pins[ev.id];
+      renderEvents(); renderAll(); save(); return;
+    }
+    const del = e.target.closest('[data-del]');
+    if(del){
+      S.events = S.events.filter(x=>x.id!==del.dataset.del);
+      S.wishes = S.wishes.filter(w=>w.evId!==del.dataset.del);
+      if(S.result) delete S.result[del.dataset.del];
+      renderEvents(); renderAll(); save();
+    }
+  });
+  $('#addWish').addEventListener('click', ()=>{
+    const key = $('#wishMember').value, evId = $('#wishEvent').value;
+    if(!key || !evId){ toast('メンバーと競技を選んでください'); return; }
+    if(S.wishes.some(w=>w.key===key && w.evId===evId)){ toast('すでに指定ずみです'); return; }
+    S.wishes.push({id:uid(), key, evId, only:false});
+    renderAll(); save(); toast('先に決めるリストに追加しました');
+  });
+  $('#wishList').addEventListener('click', e=>{
+    const on = e.target.closest('[data-only]');
+    if(on){
+      const w = S.wishes.find(x=>x.id===on.dataset.only); if(!w) return;
+      w.only = !w.only; renderAll(); save(); return;
+    }
+    const dl = e.target.closest('[data-wdel]');
+    if(dl){ S.wishes = S.wishes.filter(x=>x.id!==dl.dataset.wdel); renderAll(); save(); }
+  });
+
+  $('#addEvent').addEventListener('click', ()=>{
+    S.events.push({id:uid(), name:'', pt:1, all:false, slotText:'1走目, 2走目'});
+    renderEvents(); renderAll(); save();
+    const ins = $('#eventList').querySelectorAll('input[data-k="name"]');
+    if(ins.length) ins[ins.length-1].focus();
+  });
+  $('#resetEvents').addEventListener('click', ()=>{
+    S.events = DEFAULT_EVENTS(); S.pins = {}; S.result = null; S.wishes = []; S.wishFail = [];
+    renderEvents(); renderAll(); save(); toast('競技を初期セットに戻しました');
+  });
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('#goBtn').addEventListener('click', ()=>{
+    const btn = $('#goBtn'); if(btn.disabled) return;
+    const run = ()=>{
+      closeMenu();
+      assign(null); S.tab='events'; syncTabs();
+      animateNext = true; renderAll(); animateNext = false;
+      btn.disabled = false; btn.textContent = 'もう一度、ドン！';
+    };
+    if(reduced){ run(); return; }
+    btn.disabled = true; btn.textContent = 'よーい……';
+    setTimeout(run, 400);
+  });
+
+  $('#result').addEventListener('click', e=>{
+    const chip = e.target.closest('.chip[data-key]');
+    if(chip){ openMenu(chip); return; }
+    const rb = e.target.closest('[data-redraw]');
+    if(rb){ closeMenu(); assign(rb.dataset.redraw); animateNext = true; renderAll(); animateNext = false; toast('引き直しました'); }
+  });
+
+  /* ── ドラッグで入れ替え ── */
+  let dragFrom = null;
+  function clearDropMarks(){ document.querySelectorAll('.chip.drop-target').forEach(el=>el.classList.remove('drop-target')); }
+  $('#result').addEventListener('dragstart', e=>{
+    const chip = e.target.closest('.chip[draggable="true"]');
+    if(!chip){ return; }
+    closeMenu();
+    dragFrom = {ev: chip.dataset.ev, si: +chip.dataset.si};
+    chip.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    try{ e.dataTransfer.setData('text/plain', chip.dataset.key || ''); }catch(_){}
+  });
+  $('#result').addEventListener('dragover', e=>{
+    if(!dragFrom) return;
+    const t = e.target.closest('[data-drop]');
+    if(!t) return;
+    if(S.pins[t.dataset.ev+'|'+t.dataset.si] != null) return;   // 固定枠には落とせない
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if(!t.classList.contains('drop-target')){ clearDropMarks(); t.classList.add('drop-target'); }
+  });
+  $('#result').addEventListener('dragleave', e=>{
+    const t = e.target.closest('[data-drop]');
+    if(t) t.classList.remove('drop-target');
+  });
+  $('#result').addEventListener('drop', e=>{
+    const t = e.target.closest('[data-drop]');
+    if(!dragFrom || !t) return;
+    e.preventDefault();
+    clearDropMarks();
+    const to = {ev: t.dataset.ev, si: +t.dataset.si};
+    if(S.pins[to.ev+'|'+to.si] != null){ toast('固定されている枠には移せません'); dragFrom = null; return; }
+    if(to.ev === dragFrom.ev && to.si === dragFrom.si){ dragFrom = null; return; }
+    const same = (to.ev === dragFrom.ev);
+    const ok = same
+      ? moveWithin(dragFrom.ev, dragFrom.si, to.si)
+      : swapSlots(dragFrom.ev, dragFrom.si, to.ev, to.si);
+    dragFrom = null;
+    applyEdit(ok, same ? '走順をずらしました' : '別の競技と入れ替えました');
+  });
+  $('#result').addEventListener('dragend', ()=>{
+    dragFrom = null;
+    clearDropMarks();
+    document.querySelectorAll('.chip.dragging').forEach(el=>el.classList.remove('dragging'));
+  });
+
+  function syncTabs(){
+    $('#tabEvents').setAttribute('aria-selected', String(S.tab==='events'));
+    $('#tabTable').setAttribute('aria-selected', String(S.tab==='table'));
+    $('#tabMembers').setAttribute('aria-selected', String(S.tab==='members'));
+  }
+  $('#tabEvents').addEventListener('click', ()=>{ S.tab='events'; syncTabs(); renderAll(); save(); });
+  $('#tabTable').addEventListener('click', ()=>{ S.tab='table'; syncTabs(); renderAll(); save(); });
+  $('#tabMembers').addEventListener('click', ()=>{ S.tab='members'; syncTabs(); renderAll(); save(); });
+
+  async function copyText(text, msg){
+    try{ await navigator.clipboard.writeText(text); toast(msg); }
+    catch(err){
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); toast(msg); }catch(e2){ toast('コピーできませんでした'); }
+      ta.remove();
+    }
+  }
+  $('#copyBtn').addEventListener('click', ()=>{
+    if(!S.result){ toast('まだ抽選していません'); return; }
+    copyText(resultText(), '文章としてコピーしました');
+  });
+  $('#copyTableBtn').addEventListener('click', ()=>{
+    if(!S.result){ toast('まだ抽選していません'); return; }
+    copyText(tableText(), '表をコピーしました（そのまま貼り付けできます）');
+  });
+  $('#printBtn').addEventListener('click', ()=>window.print());
+  $('#themeBtn').addEventListener('click', ()=>{
+    const cur = document.documentElement.getAttribute('data-theme');
+    const dark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = dark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    S.theme = next; save();
+  });
+
+  load();
+  if(S.theme) document.documentElement.setAttribute('data-theme', S.theme);
+  $('#members').value = S.memberText;
+  if(S.result) $('#goBtn').textContent = 'もう一度、ドン！';
+  syncTabs(); renderEvents(); renderAll();
+})();
+</script>
