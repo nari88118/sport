@@ -4,10 +4,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FAF7F0; --surface:#FFFFFF; --surface-2:#E9F5F5;
-  --shade:#C7E7E4;
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#E9F5F5;
+  --shade:#B3E0DB;
   --ink:#14283A; --ink-2:#536573; --ink-3:#8798A5;
-  --line:#DAEAEA; --line-strong:#B2D7D3;
+  --line:#C6E2DF; --line-strong:#7FC5BE;
   --accent:#10B0A4; --accent-ink:#FFFFFF; --accent-soft:#DBF4F1;
   --plus:#3563A8; --plus-soft:#E2EBF7;
   --minus:#E0537C; --minus-soft:#FCE6EC;
@@ -22,7 +22,7 @@
     --bg:#0F1A21; --surface:#17242E; --surface-2:#1F303B;
     --shade:#0A1319;
     --ink:#E6F0F2; --ink-2:#9FB2BC; --ink-3:#748995;
-    --line:#263945; --line-strong:#38505E;
+    --line:#31485A; --line-strong:#4E6E7E;
     --accent:#2DD0C1; --accent-ink:#052320; --accent-soft:#123833;
     --plus:#6FA8E8; --plus-soft:#16283D;
     --minus:#FF7BA3; --minus-soft:#391E27;
@@ -34,7 +34,7 @@
   --bg:#0F1A21; --surface:#17242E; --surface-2:#1F303B;
   --shade:#0A1319;
   --ink:#E6F0F2; --ink-2:#9FB2BC; --ink-3:#748995;
-  --line:#263945; --line-strong:#38505E;
+  --line:#31485A; --line-strong:#4E6E7E;
   --accent:#2DD0C1; --accent-ink:#052320; --accent-soft:#123833;
   --plus:#6FA8E8; --plus-soft:#16283D;
   --minus:#FF7BA3; --minus-soft:#391E27;
@@ -71,7 +71,8 @@ h1 .dot{color:var(--accent)}
 .sec-h h2{font-family:var(--font-display);font-weight:400;font-size:12px;letter-spacing:.04em}
 .sec-h .note{margin-left:auto;font-family:var(--font-num);font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 
-textarea,input[type=text]{width:100%;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:7px;padding:6px 9px}
+textarea,input[type=text]{width:100%;background:var(--surface);border:1px solid var(--accent);border-radius:7px;padding:6px 9px}
+textarea:focus,input[type=text]:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);outline:none}
 textarea{min-height:104px;resize:vertical;line-height:1.7;display:block}
 textarea::placeholder,input::placeholder{color:var(--ink-3)}
 .under{display:flex;align-items:center;gap:8px;margin-top:6px}
@@ -86,7 +87,7 @@ textarea::placeholder,input::placeholder{color:var(--ink-3)}
 .btn-go[disabled]{opacity:.75;cursor:progress}
 
 #eventList{max-height:250px;overflow-y:auto;margin:0 -2px;padding:0 2px}
-.ev-item{border:1px solid var(--line);border-radius:8px;padding:5px 6px;margin-bottom:5px;background:var(--surface-2)}
+.ev-item{border:1px solid var(--line-strong);border-radius:8px;padding:5px 6px;margin-bottom:5px;background:var(--surface)}
 .ev-top{display:flex;gap:4px;align-items:center}
 .ev-top input{flex:1;min-width:0;border:none;background:transparent;padding:2px 4px;font-weight:500;border-radius:5px}
 .ev-top input:hover{background:var(--surface-2)}
@@ -97,7 +98,7 @@ textarea::placeholder,input::placeholder{color:var(--ink-3)}
 .all-btn{flex:none;font-size:11px;border-radius:99px;padding:2px 9px;cursor:pointer;border:1px dashed var(--line-strong);background:transparent;color:var(--ink-3)}
 .all-btn[aria-pressed="true"]{border-style:solid;border-color:var(--ink);color:var(--ink);background:var(--surface-2)}
 
-select{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:7px;padding:4px 6px;font-size:11.5px;min-width:0}
+select{background:var(--surface);border:1px solid var(--accent);border-radius:7px;padding:4px 6px;font-size:11.5px;min-width:0}
 .wish-add{display:flex;gap:4px}
 .wish-add select{flex:1 1 0}
 #wishList{max-height:126px;overflow-y:auto;margin-top:2px}
@@ -131,8 +132,8 @@ select{background:var(--surface-2);border:1px solid var(--line-strong);border-ra
 .slot-row + .slot-row{border-top:1px solid var(--line)}
 .lb{flex:none;width:52px;font-family:var(--font-num);font-size:11.5px;color:var(--ink-3);letter-spacing:.02em}
 .ppl{display:flex;flex-wrap:wrap;gap:4px;min-width:0}
-.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface-2);border-radius:99px;padding:1px 9px;font-size:12.5px;cursor:pointer;transition:border-color .15s,background .15s}
-.chip:hover{border-color:var(--ink-3)}
+.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:color-mix(in srgb, var(--surface-2) 35%, var(--surface));border-radius:99px;padding:1px 9px;font-size:12.5px;cursor:pointer;transition:border-color .15s,background .15s}
+.chip:hover{border-color:var(--accent);background:var(--surface-2)}
 .chip .pin,.chip .star{display:none;font-size:9px}
 .chip.wish{border-color:var(--plus);background:var(--plus-soft)}
 .chip.wish .star{display:inline;color:var(--plus)}
