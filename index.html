@@ -111,6 +111,17 @@ select{background:var(--surface);border:1px solid var(--accent);border-radius:7p
 .only-btn[aria-pressed="true"]{border-style:solid;border-color:var(--plus);color:var(--plus);background:var(--plus-soft)}
 .wish-none{font-size:11px;color:var(--ink-3);padding:4px 1px}
 
+.ow-sec{display:flex;align-items:center;gap:7px}
+.ow-toggle{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;white-space:nowrap;flex:none}
+.ow-toggle input{accent-color:var(--minus);width:14px;height:14px;cursor:pointer;margin:0}
+.ow-sec select{flex:1;min-width:0}
+.ow-sec select:disabled{opacity:.45}
+.ow-sec.on .ow-toggle{color:var(--minus);font-weight:700}
+.chip.ow{border-color:var(--minus);background:var(--minus-soft)}
+.chip .fire{display:none;font-size:10px}
+.chip.ow .fire{display:inline}
+.meter .ow-note{color:var(--minus);font-weight:700}
+
 .result-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .tabs{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:2px}
 .tab{border:none;background:transparent;padding:4px 12px;border-radius:99px;cursor:pointer;font-size:12px;color:var(--ink-2)}
@@ -244,6 +255,11 @@ td.mcell .dash{color:var(--line-strong)}
         <p class="hint" style="margin:5px 0 0">ここに入れた人は抽選より先に確保します。<b style="color:var(--plus)">だけ</b>を押すと、その人は指定した競技（と全員参加の競技）にしか出ません。</p>
       </div>
 
+      <div class="sec ow-sec" id="owSec">
+        <label class="ow-toggle"><input type="checkbox" id="owOn"><span>🔥 過労モード</span></label>
+        <select id="owWho" disabled aria-label="過労させる人"></select>
+      </div>
+
       <button class="btn-go" id="goBtn">よーい、ドン！</button>
     </aside>
 
@@ -285,6 +301,9 @@ td.mcell .dash{color:var(--line-strong)}
     memberText: SAMPLE,
     events: DEFAULT_EVENTS(),
     pins: {},      // "evId|slotIndex" -> memberKey
+    overwork: {on:false, key:''},  // 🔥 過労モード（key空＝おまかせ）
+    owWho: null,   // 実際に選ばれた過労担当
+    owExtra: 0,    // 全員参加の競技で何回おかわりするか
     wishes: [],    // {id, key, evId, only}  先に決める
     wishFail: [],  // 入りきらなかった希望
     result: null,  // evId -> [memberKey|null, ...]
@@ -300,6 +319,7 @@ td.mcell .dash{color:var(--line-strong)}
       if(o && typeof o === 'object' && Array.isArray(o.events)) S = Object.assign(S, o);
       S.pins = S.pins || {};
       if(!Array.isArray(S.wishes)) S.wishes = [];
+      S.overwork = Object.assign({on:false, key:''}, S.overwork || {});
       if(!Array.isArray(S.wishFail)) S.wishFail = [];
     }catch(e){}
   }
@@ -317,7 +337,10 @@ td.mcell .dash{color:var(--line-strong)}
     return out;
   }
   function labelsOf(ev, n){
-    if(ev.all) return Array.from({length:n}, (_,i)=>(i+1)+'走目');
+    if(ev.all){
+      const extra = (n && S.overwork && S.overwork.on && S.owWho) ? (S.owExtra || 0) : 0;
+      return Array.from({length:n + extra}, (_,i)=>(i+1)+'走目');
+    }
     const raw = String(ev.slotText||'').trim();
     if(/^\d+$/.test(raw)){
       const k = Math.max(0, Math.min(60, parseInt(raw,10)));
@@ -336,6 +359,20 @@ td.mcell .dash{color:var(--line-strong)}
     const n = members.length;
     if(!n){ S.result = null; S.wishFail = []; return; }
     const byKey = new Map(members.map(m=>[m.key,m]));
+
+    // 🔥 過労モード：誰を走らせるか＆全員参加競技で何回おかわりするかを先に決める
+    let owKey = null;
+    if(S.overwork && S.overwork.on){
+      owKey = (S.overwork.key && byKey.has(S.overwork.key)) ? S.overwork.key : pickRandom(members).key;
+      if(!onlyEvId || !S.owExtra){
+        const maxExtra = Math.max(1, Math.min(4, n - 1));
+        S.owExtra = 1 + Math.floor(Math.random() * maxExtra);
+      }
+    } else {
+      S.owExtra = 0;
+    }
+    S.owWho = owKey;
+
     const evs = S.events.map(ev=>({ev, labels: labelsOf(ev, n)}));
     const evById = new Map(evs.map(e=>[e.ev.id, e]));
 
@@ -393,9 +430,20 @@ td.mcell .dash{color:var(--line-strong)}
     const open = [];
     evs.forEach(e=> e.labels.forEach((lb,si)=>{ if(res[e.ev.id][si]===null) open.push({e,si}); }));
     shuffle(open).forEach(({e,si})=>{
+      // 🔥 出場枠は過労担当が総取り。全員参加の競技は「おかわり」の回数ぶんだけ
+      if(owKey && e.ev.pt >= 0 && allowed(e, owKey)){
+        const already = inEv.get(e.ev.id).get(owKey) || 0;
+        const quota = e.ev.all ? (S.owExtra + 1) : Infinity;
+        if(already < quota){
+          place(e, si, owKey);
+          locked.add(e.ev.id+'|'+si);
+          return;
+        }
+      }
       const m = inEv.get(e.ev.id), cap = capOf(e);
       let pool = members.filter(x=>allowed(e, x.key) && (m.get(x.key)||0) < cap);
       if(!pool.length) pool = members.filter(x=>allowed(e, x.key));
+      if(owKey && e.ev.pt < 0 && pool.length > 1) pool = pool.filter(x=>x.key !== owKey);   // 裏方は免除
       if(!pool.length) return;                               // 埋められない枠は空のまま
       const minIn = Math.min.apply(null, pool.map(x=>m.get(x.key)||0));
       pool = pool.filter(x=>(m.get(x.key)||0)===minIn);
@@ -428,6 +476,7 @@ td.mcell .dash{color:var(--line-strong)}
           // 付け替え：この枠の担当を別の人へ
           const b = pickRandom(members).key;
           if(b === a || !allowed(A.e, b)) continue;
+          if(owKey && (a === owKey || b === owKey)) continue;   // 🔥 過労担当は最適化の対象外
           if((inEv.get(A.e.ev.id).get(b)||0) >= capOf(A.e)) continue;
           const pt = A.e.ev.pt;
           const sa = score.get(a), sb = score.get(b), ca = count.get(a), cb = count.get(b);
@@ -443,6 +492,7 @@ td.mcell .dash{color:var(--line-strong)}
           if(A.e.ev.id === B.e.ev.id || A.e.ev.pt === B.e.ev.pt) continue;
           const b = res[B.e.ev.id][B.si];
           if(!b || b === a) continue;
+          if(owKey && (a === owKey || b === owKey)) continue;   // 🔥 過労担当は最適化の対象外
           if(!allowed(A.e, b) || !allowed(B.e, a)) continue;
           if((inEv.get(A.e.ev.id).get(b)||0) >= capOf(A.e)) continue;
           if((inEv.get(B.e.ev.id).get(a)||0) >= capOf(B.e)) continue;
@@ -487,6 +537,18 @@ td.mcell .dash{color:var(--line-strong)}
   }
 
   /* ── 描画 ── */
+  function renderOverwork(members){
+    const sec = $('#owSec'), chk = $('#owOn'), sel = $('#owWho');
+    const on = !!(S.overwork && S.overwork.on);
+    sec.classList.toggle('on', on);
+    chk.checked = on;
+    sel.disabled = !on;
+    const keep = S.overwork.key;
+    sel.innerHTML = '<option value="">おまかせ（毎回ランダム）</option>' +
+      members.map(m=>'<option value="'+esc(m.key)+'">'+esc(m.name)+'</option>').join('');
+    sel.value = (keep && members.some(m=>m.key===keep)) ? keep : '';
+  }
+
   function renderWishes(){
     const members = parseMembers();
     const byKey = new Map(members.map(m=>[m.key,m]));
@@ -536,7 +598,8 @@ td.mcell .dash{color:var(--line-strong)}
         '</div>';
       item.querySelector('input[data-k="name"]').value = ev.name;
       const st = item.querySelector('input[data-k="slotText"]');
-      st.value = ev.all ? (n ? '1走目〜'+n+'走目（自動）' : '（自動）') : ev.slotText;
+      const ln = labelsOf(ev, n).length;
+      st.value = ev.all ? (ln ? '1走目〜'+ln+'走目（自動）' : '（自動）') : ev.slotText;
       box.appendChild(item);
     });
     let slots = 0, plus = 0, minus = 0;
@@ -555,6 +618,7 @@ td.mcell .dash{color:var(--line-strong)}
     $('#memberNote').textContent = n + '人';
     const {score, count, pos, neg, detail} = tally(members);
     renderWishes();
+    renderOverwork(members);
 
     let slots = 0;
     S.events.forEach(ev=>{ slots += labelsOf(ev, n).length; });
@@ -563,7 +627,9 @@ td.mcell .dash{color:var(--line-strong)}
     if(S.result && n){
       const vals = members.map(m=>score.get(m.key));
       const spread = Math.max.apply(null, vals) - Math.min.apply(null, vals);
-      meter += spread > 1
+      const owM = (S.overwork && S.overwork.on && S.owWho) ? members.find(m=>m.key===S.owWho) : null;
+      if(owM) meter += '<span class="ow-note">🔥 '+esc(owM.name)+'さんが大車輪</span>';
+      else meter += spread > 1
         ? '<span class="spread bad"><b>△</b> すこしかたよりあり</span>'
         : '<span class="spread"><b>◎</b> みんな同じくらい</span>';
     }
@@ -602,6 +668,7 @@ td.mcell .dash{color:var(--line-strong)}
   function renderByEvent(members){
     const byKey = new Map(members.map(m=>[m.key,m]));
     const wishSet = new Set(S.wishes.map(w=>w.key+'|'+w.evId));
+    const ow = (S.overwork && S.overwork.on) ? S.owWho : null;
     const n = members.length;
     let idx = 0;
     const html = S.events.map(ev=>{
@@ -622,11 +689,12 @@ td.mcell .dash{color:var(--line-strong)}
           const locked = S.pins[ev.id+'|'+it.si] != null;
           const pinned = S.pins[ev.id+'|'+it.si] === it.key;
           const isWish = wishSet.has(it.key+'|'+ev.id);
+          const isOw = ow && it.key === ow;
           const anim = animateNext ? ' appear' : '';
-          return '<button class="chip'+anim+(isWish?' wish':'')+(locked?' locked':'')+'" style="--i:'+idx+'"' +
+          return '<button class="chip'+anim+(isWish?' wish':'')+(isOw?' ow':'')+(locked?' locked':'')+'" style="--i:'+idx+'"' +
             ' draggable="'+(locked?'false':'true')+'" aria-pressed="'+pinned+'"'+drop+' data-key="'+esc(it.key)+'"' +
             ' title="タップでメニュー／ドラッグで入れ替え">' +
-            '<span class="star">★</span>' + esc(byKey.get(it.key).name) + '<span class="pin">📌</span></button>';
+            '<span class="star">★</span><span class="fire">🔥</span>' + esc(byKey.get(it.key).name) + '<span class="pin">📌</span></button>';
         }).join('');
         return '<div class="slot-row"><span class="lb">'+esc(r.label)+'</span><div class="ppl">'+ppl+'</div></div>';
       }).join('') || '<div class="slot-row"><span class="lb">—</span><div class="ppl"><span class="chip empty">枠が空です</span></div></div>';
@@ -919,6 +987,19 @@ td.mcell .dash{color:var(--line-strong)}
       renderEvents(); renderAll(); save();
     }
   });
+  $('#owOn').addEventListener('change', e=>{
+    S.overwork.on = e.target.checked;
+    S.owWho = null; S.owExtra = 0; S.result = null;
+    $('#goBtn').textContent = 'よーい、ドン！';
+    save(); renderAll();
+    if(S.overwork.on) toast('🔥 過労モード：ひとりが走りまくります');
+  });
+  $('#owWho').addEventListener('change', e=>{
+    S.overwork.key = e.target.value;
+    if(S.overwork.on){ S.owWho = null; S.owExtra = 0; S.result = null; $('#goBtn').textContent = 'よーい、ドン！'; }
+    save(); renderAll();
+  });
+
   $('#addWish').addEventListener('click', ()=>{
     const key = $('#wishMember').value, evId = $('#wishEvent').value;
     if(!key || !evId){ toast('メンバーと競技を選んでください'); return; }
